@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class Main {
     private static boolean DO_MEMOIZATION = true;
@@ -17,6 +20,9 @@ public class Main {
             int profit = rand.nextInt(51) + 50;// [50 - 100]
             goods[i] = new Good(Integer.toString(i + 1), profit, weight);
         }
+        MemoMatrix<List<Good>> memo = new MemoMatrix<>(1, 1);
+        memo.memoize(0,0,Arrays.asList(goods));
+        memo.printMatrix(g -> Integer.toString(profit(g)));
 
         // On average take only 2/3rds of my goods.
         int maxWeight = (2 * Arrays.stream(goods).mapToInt(Good::getWeight)
@@ -34,10 +40,14 @@ public class Main {
         for (Good packedGood : packedGoods) {
             System.out.println(packedGood.toString());
         }
+
     }
 
     private static Good[] knapsack (Good[] goods, int maxWeight) {
         // Init memo array to nulls
+        // TODO: Replace with a collections api object
+        // Might need to write a class like MemoMatrix<T>
+        // To handle the complexity of a List<List<List<Good>>>
         Good[][][] memo = new Good[maxWeight + 1][goods.length][];
         for (int i = 0; i < memo.length; i++) {
             for (int j = 0; j < memo[0].length; j++) {
@@ -110,6 +120,10 @@ public class Main {
        return Arrays.stream(goods).mapToInt(Good::getProfit).sum();
     }
 
+    private static int profit (List<Good> goods) {
+        return goods.stream().mapToInt(Good::getProfit).sum();
+    }
+
     private static void printMemo (Good[][][] memo) {
         int max = profit(memo[memo.length - 1][memo[0].length - 1]);
         int width = Integer.toString(max).length();
@@ -161,5 +175,50 @@ class Good {
     public String toString () {
         return String.format("(%s, p=%d, w=%d)", this.name, this.profit, this
                 .weight);
+    }
+}
+
+// TODO:
+class MemoMatrix<T> {
+    List<List<T>> memo;
+
+    public MemoMatrix (int initialX, int initialY) {
+        memo = new ArrayList<>();
+        for (int i = 0; i < initialX; i++) {
+            ArrayList<T> temp = new ArrayList<>();
+            for (int j = 0; j < initialY; j++) {
+                temp.add(null);
+            }
+            memo.add(temp);
+        }
+    }
+
+    public void memoize (int x, int y, T element) {
+        // todo: index checks
+        memo.get(x).set(y, element);
+    }
+
+    public boolean isMemoized (int x, int y) {
+        // todo: index checks
+        return memo.get(x).get(y) != null;
+    }
+
+    public T recall (int x, int y) {
+        // todo: index checks
+        return memo.get(x).get(y);
+    }
+
+    public void printMatrix (Function<T, String> stringFunction) {
+        // todo: implementation
+        // example call printMatrix((g) -> (Integer.toString(profit(g))));
+
+        // Temporary demo loops. replace with proper formatting
+        for (int i = 0; i < memo.size(); i++) {
+            for (int j = 0; j < memo.get(0).size(); j++) {
+                if (isMemoized(i, j)) {
+                    System.out.println(stringFunction.apply(recall(i, j)));
+                }
+            }
+        }
     }
 }
