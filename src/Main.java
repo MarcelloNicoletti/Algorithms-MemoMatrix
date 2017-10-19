@@ -1,27 +1,25 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Main {
-    private static boolean DO_MEMOIZATION = true;
     private static Random rand = new Random(1);
     public static void main (String[] args) {
-//        Good[] goods = new Good[5];
-//        goods[0] = new Good("Elixir", 60, 3);
-//        goods[1] = new Good("Dart", 72, 4);
-//        goods[2] = new Good("Perl", 80, 5);
-//        goods[3] = new Good("Python", 90, 6);
-//        goods[4] = new Good("Ruby", 48, 4);
-        Good[] goods = new Good[rand.nextInt(11) + 10];
-        for (int i = 0; i < goods.length; i++) {
+//        List<Good> goods = new ArrayList<>();
+//        goods.add(new Good("Elixir", 60, 3));
+//        goods.add(new Good("Dart", 72, 4));
+//        goods.add(new Good("Perl", 80, 5));
+//        goods.add(new Good("Python", 90, 6));
+//        goods.add(new Good("Ruby", 48, 4));
+//        int maxWeight = 10;
+        List<Good> goods = new ArrayList<>();
+        for (int i = 0; i < rand.nextInt(11) + 10; i++) {
             int weight = rand.nextInt(16) + 1; // [1 - 15]
             int profit = rand.nextInt(51) + 50;// [50 - 100]
-            goods[i] = new Good(Integer.toString(i + 1), profit, weight);
+            goods.add(new Good(Integer.toString(i + 1), profit, weight));
         }
-
-        // On average take only 2/3rds of my goods.
-        int maxWeight = (2 * Arrays.stream(goods).mapToInt(Good::getWeight)
-                .sum()) / 3;
+        int maxWeight = (2 * goods.stream().mapToInt(Good::getWeight)
+                .sum()) / 3; // On average take only 2/3rds of my goods.
 
         System.out.println("Packing these goods into a knapsack. Can only " +
                 "carry " + maxWeight + " weight.");
@@ -29,7 +27,7 @@ public class Main {
             System.out.println(good.toString());
         }
 
-        Good[] packedGoods = knapsack(goods, maxWeight);
+        List<Good> packedGoods = knapsack(goods, maxWeight);
         System.out.println("\nThese goods fit with the best profit, " +
                 profit(packedGoods) + ".");
         for (Good packedGood : packedGoods) {
@@ -38,107 +36,70 @@ public class Main {
 
     }
 
-    private static Good[] knapsack (Good[] goods, int maxWeight) {
-        // Init memo array to nulls
-        // TODO: Replace with a collections api object
-        // Might need to write a class like MemoMatrix<T>
-        // To handle the complexity of a List<List<List<Good>>>
-        Good[][][] memo = new Good[maxWeight + 1][goods.length][];
-        for (int i = 0; i < memo.length; i++) {
-            for (int j = 0; j < memo[0].length; j++) {
-                memo[i][j] = null;
-            }
-        }
+    private static List<Good> knapsack (List<Good> goods, int maxWeight) {
+        MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1,goods.size
+                ());
 
         // Call recursive helper
-        Good[] temp = knapsackHelper(goods, maxWeight, memo);
-        printMemo(memo);
-        return temp;
+        List<Good> solution = knapsackHelper(goods, maxWeight, memo);
+        memo.printMatrix(e -> Integer.toString(profit(e)));
+        return solution;
     }
 
-    private static Good[] knapsackHelper (Good[] goods, int maxWeight,
-            Good[][][] memo) {
+    private static List<Good> knapsackHelper (List<Good> goods, int maxWeight,
+            MemoMatrix<List<Good>> memo) {
         // If memoized, return that solution
-        int lastGoodIdx = goods.length - 1;
-        if (DO_MEMOIZATION && memo[maxWeight][lastGoodIdx] != null) {
-            return memo[maxWeight][lastGoodIdx];
+        int lastGoodIdx = goods.size() - 1;
+        if (true && memo.isMemoized(maxWeight, lastGoodIdx)) {
+            return memo.recall(maxWeight, lastGoodIdx);
         }
 
         // A base case: only one item in goods
-        if (goods.length == 1) {
-            if (goods[0].getWeight() > maxWeight) {
-                Good[] emptyGoods = new Good[0];
-                memo[maxWeight][lastGoodIdx] = emptyGoods;
+        if (goods.size() == 1) {
+            if (goods.get(0).getWeight() > maxWeight) {
+                List<Good> emptyGoods = new ArrayList<>();
+                memo.memoize(maxWeight, lastGoodIdx, emptyGoods);
                 return emptyGoods;
             } else {
-                Good[] newGoods = new Good[1];
-                newGoods[0] = goods[0];
-                memo[maxWeight][lastGoodIdx] = newGoods;
+                List<Good> newGoods = new ArrayList<>();
+                newGoods.add(goods.get(0));
+                memo.memoize(maxWeight, lastGoodIdx, newGoods);
                 return newGoods;
             }
         }
 
         // Next recursion covers the goods except the last one
-        Good[] goodsExceptLast = Arrays.copyOf(goods, lastGoodIdx);
+        List<Good> goodsExceptLast = new ArrayList<>(goods.subList(0,
+                lastGoodIdx));
 
         // Construct array of possible solution not including last item in goods
-        Good[] solutionNotUsingLast = knapsackHelper(goodsExceptLast,
+        List<Good> solutionNotUsingLast = knapsackHelper(goodsExceptLast,
                 maxWeight, memo);
 
         // Construct array of possible solution including last item in goods
-        Good[] solutionUsingLast;
-        int newMaxWeight = maxWeight - goods[lastGoodIdx].getWeight();
+        List<Good> solutionUsingLast;
+        int newMaxWeight = maxWeight - goods.get(lastGoodIdx).getWeight();
         if (newMaxWeight < 0) {
             // If the last good is heavier than the capacity we can't use it
             // Another base case.
-            solutionUsingLast = new Good[0];
+            solutionUsingLast = new ArrayList<>();
         } else {
-            solutionUsingLast = knapsackHelper(goodsExceptLast,
-                    newMaxWeight, memo);
-            solutionUsingLast = Arrays.copyOf(solutionUsingLast,
-                    solutionUsingLast.length + 1);
-            solutionUsingLast[solutionUsingLast.length - 1] = goods[
-                    lastGoodIdx];
+            solutionUsingLast = new ArrayList<>(knapsackHelper(goodsExceptLast,
+                    newMaxWeight, memo));
+            solutionUsingLast.add(goods.get(lastGoodIdx));
         }
 
         // Compare profits and return best
         if (profit(solutionUsingLast) > profit(solutionNotUsingLast)) {
-            memo[maxWeight][lastGoodIdx] = solutionUsingLast;
+            memo.memoize(maxWeight, lastGoodIdx, solutionUsingLast);
             return solutionUsingLast;
         } else {
-            memo[maxWeight][lastGoodIdx] = solutionNotUsingLast;
+            memo.memoize(maxWeight, lastGoodIdx, solutionNotUsingLast);
             return solutionNotUsingLast;
         }
     }
 
-    private static int profit (Good[] goods) {
-       return Arrays.stream(goods).mapToInt(Good::getProfit).sum();
-    }
-
     private static int profit (List<Good> goods) {
         return goods.stream().mapToInt(Good::getProfit).sum();
-    }
-
-    private static void printMemo (Good[][][] memo) {
-        int max = profit(memo[memo.length - 1][memo[0].length - 1]);
-        int width = Integer.toString(max).length();
-        System.out.println();
-        for (int j = 0; j < memo[0].length; j++) {
-            for (int i = 0; i < memo.length; i++) {
-                if (memo[i][j] == null) {
-                    for (int k = 0; k < width; k++) {
-                        if (k == (width / 2) + 0) {
-                            System.out.print("—");
-                        } else {
-                            System.out.print(" ");
-                        }
-                    }
-                    System.out.print(" ");
-                } else {
-                    System.out.printf("%" + width + "d ", profit(memo[i][j]));
-                }
-            }
-            System.out.println();
-        }
     }
 }
