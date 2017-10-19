@@ -20,9 +20,6 @@ public class Main {
             int profit = rand.nextInt(51) + 50;// [50 - 100]
             goods[i] = new Good(Integer.toString(i + 1), profit, weight);
         }
-        MemoMatrix<List<Good>> memo = new MemoMatrix<>(1, 1);
-        memo.memoize(0,0,Arrays.asList(goods));
-        memo.printMatrix(g -> Integer.toString(profit(g)));
 
         // On average take only 2/3rds of my goods.
         int maxWeight = (2 * Arrays.stream(goods).mapToInt(Good::getWeight)
@@ -178,9 +175,8 @@ class Good {
     }
 }
 
-// TODO:
 class MemoMatrix<T> {
-    List<List<T>> memo;
+    private List<List<T>> memo;
 
     public MemoMatrix (int initialX, int initialY) {
         memo = new ArrayList<>();
@@ -209,14 +205,36 @@ class MemoMatrix<T> {
     }
 
     public void printMatrix (Function<T, String> stringFunction) {
-        // todo: implementation
-        // example call printMatrix((g) -> (Integer.toString(profit(g))));
+        // TODO: Ensure this works as expected
+        // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
-        // Temporary demo loops. replace with proper formatting
+        int maxLen = 0;
+        List<List<String>> lists = new ArrayList<>();
         for (int i = 0; i < memo.size(); i++) {
-            for (int j = 0; j < memo.get(0).size(); j++) {
+            List<String> strings = new ArrayList<>();
+            for (int j = 0; j < memo.get(i).size(); j++) {
                 if (isMemoized(i, j)) {
-                    System.out.println(stringFunction.apply(recall(i, j)));
+                    String stringForm = stringFunction.apply(recall(i, j));
+                    maxLen = Math.max(maxLen, stringForm.length());
+                    strings.add(stringForm);
+                } else {
+                    strings.add("—");
+                }
+            }
+            lists.add(strings);
+        }
+        maxLen++;
+
+        for (List<String> strings : lists) {
+            for (String string : strings) {
+                int padding = maxLen - string.length();
+                for (int k = 0; k < padding / 2; k++) {
+                    System.out.print(" ");
+                }
+                System.out.print(string);
+                for (int k = 0; k < (maxLen - (padding / 2) - string.length());
+                     k++) {
+                    System.out.print(" ");
                 }
             }
         }
