@@ -31,8 +31,11 @@ public class MemoMatrix<T> {
         return memo.get(x).get(y);
     }
 
+    public void printMatrix () {
+        printMatrix(T::toString);
+    }
+
     public void printMatrix (Function<T, String> stringFunction) {
-        // TODO: Ensure this works as expected
         // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
         int maxLen = 0;
@@ -52,8 +55,9 @@ public class MemoMatrix<T> {
         }
         maxLen++;
 
-        for (List<String> strings : lists) {
-            for (String string : strings) {
+        for (int j = 0; j < lists.get(0).size(); j++) {
+            for (int i = 0; i < lists.size(); i++) {
+                String string = lists.get(i).get(j);
                 int padding = maxLen - string.length();
                 for (int k = 0; k < padding / 2; k++) {
                     System.out.print(" ");
@@ -64,6 +68,7 @@ public class MemoMatrix<T> {
                     System.out.print(" ");
                 }
             }
+            System.out.println();
         }
     }
 }
