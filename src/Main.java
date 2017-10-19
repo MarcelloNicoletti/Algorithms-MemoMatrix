@@ -50,7 +50,7 @@ public class Main {
             MemoMatrix<List<Good>> memo) {
         // If memoized, return that solution
         int lastGoodIdx = goods.size() - 1;
-        if (true && memo.isMemoized(maxWeight, lastGoodIdx)) {
+        if (memo.isMemoized(maxWeight, lastGoodIdx)) {
             return memo.recall(maxWeight, lastGoodIdx);
         }
 
