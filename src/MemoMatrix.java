@@ -38,14 +38,14 @@ public class MemoMatrix<T> {
     public void printMatrix (Function<T, String> stringFunction) {
         // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
-        int maxLen = 0;
+        int maxCellWidth = 0;
         List<List<String>> lists = new ArrayList<>();
         for (int i = 0; i < memo.size(); i++) {
             List<String> strings = new ArrayList<>();
             for (int j = 0; j < memo.get(i).size(); j++) {
                 if (isMemoized(i, j)) {
                     String stringForm = stringFunction.apply(recall(i, j));
-                    maxLen = Math.max(maxLen, stringForm.length());
+                    maxCellWidth = Math.max(maxCellWidth, stringForm.length());
                     strings.add(stringForm);
                 } else {
                     strings.add("—");
@@ -53,22 +53,39 @@ public class MemoMatrix<T> {
             }
             lists.add(strings);
         }
-        maxLen++;
 
+        horizontalRule(maxCellWidth);
         for (int j = 0; j < lists.get(0).size(); j++) {
+            System.out.print("|");
             for (int i = 0; i < lists.size(); i++) {
                 String string = lists.get(i).get(j);
-                int padding = maxLen - string.length();
+                int padding = maxCellWidth - string.length();
                 for (int k = 0; k < padding / 2; k++) {
                     System.out.print(" ");
                 }
                 System.out.print(string);
-                for (int k = 0; k < (maxLen - (padding / 2) - string.length());
+                for (int k = 0; k < (maxCellWidth - (padding / 2) - string.length());
                      k++) {
                     System.out.print(" ");
                 }
+                System.out.print("|");
             }
-            System.out.println();
+            horizontalRule(maxCellWidth);
         }
+    }
+
+    private void horizontalRule (int cellWidth) {
+        cellWidth += 1; // adjust for separator
+        System.out.println();
+        System.out.print("+");
+        int lineWidth = memo.size() * cellWidth;
+        for (int i = 0; i < lineWidth; i++) {
+            if ((i + 1) % cellWidth == 0) {
+                System.out.print("+");
+            } else {
+                System.out.print("-");
+            }
+        }
+        System.out.println();
     }
 }
