@@ -42,7 +42,6 @@ public class Main {
         MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1, goods.size
                 ());
 
-        // Call recursive helper
         List<Good> solution = knapsackHelper(goods, maxWeight, memo);
         memo.printMatrix(e -> Integer.toString(totalProfit(e)));
         return solution;
@@ -50,7 +49,6 @@ public class Main {
 
     private static List<Good> knapsackHelper (List<Good> goods, int maxWeight,
             MemoMatrix<List<Good>> memo) {
-        // If memoized, return that solution
         int lastGoodIdx = goods.size() - 1;
         if (memo.isMemoized(maxWeight, lastGoodIdx)) {
             return memo.recall(maxWeight, lastGoodIdx);
@@ -70,20 +68,16 @@ public class Main {
             }
         }
 
-        // Next recursion covers the goods except the last one
         List<Good> goodsExceptLast = new ArrayList<>(goods.subList(0,
                 lastGoodIdx));
 
-        // Construct array of possible solution not including last item in goods
         List<Good> solutionNotUsingLast = knapsackHelper(goodsExceptLast,
                 maxWeight, memo);
 
-        // Construct array of possible solution including last item in goods
         List<Good> solutionUsingLast;
         int newMaxWeight = maxWeight - goods.get(lastGoodIdx).getWeight();
         if (newMaxWeight < 0) {
             // If the last good is heavier than the capacity we can't use it
-            // Another base case.
             solutionUsingLast = new ArrayList<>();
         } else {
             solutionUsingLast = new ArrayList<>(knapsackHelper(goodsExceptLast,
@@ -91,7 +85,6 @@ public class Main {
             solutionUsingLast.add(goods.get(lastGoodIdx));
         }
 
-        // Compare profits and return best
         if (totalProfit(solutionUsingLast) >
                 totalProfit(solutionNotUsingLast)) {
             memo.memoize(maxWeight, lastGoodIdx, solutionUsingLast);
