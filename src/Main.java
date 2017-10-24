@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Main {
     private static Random rand = new Random(1);
+
     public static void main (String[] args) {
 //        List<Good> goods = new ArrayList<>();
 //        goods.add(new Good("Elixir", 60, 3));
@@ -38,7 +39,7 @@ public class Main {
     }
 
     private static List<Good> knapsack (List<Good> goods, int maxWeight) {
-        MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1,goods.size
+        MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1, goods.size
                 ());
 
         // Call recursive helper
