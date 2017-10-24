@@ -11,7 +11,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the solutions to "memoize".
  * @author Marcello Nicoletti
- * @version v0.1.0, 10/22/2017
+ * @version v0.2.0, 10/23/2017
  */
 public class MemoMatrix <T> {
     // memo is a column major list. It is a list of columns where each column
