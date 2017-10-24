@@ -87,7 +87,7 @@ public class MemoMatrix<T> {
     public void printMatrix (Function<T, String> stringFunction) {
         // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
-        int maxCellWidth = 0;
+        int maxCellWidth = 1;
         List<List<String>> lists = new ArrayList<>();
         for (int i = 0; i < memo.size(); i++) {
             List<String> strings = new ArrayList<>();
@@ -97,7 +97,7 @@ public class MemoMatrix<T> {
                     strings.add(stringForm);
                     maxCellWidth = Math.max(maxCellWidth, stringForm.length());
                 } else {
-                    strings.add("—");
+                    strings.add(" ");
                 }
             }
             lists.add(strings);
@@ -113,8 +113,7 @@ public class MemoMatrix<T> {
                     System.out.print(" ");
                 }
                 System.out.print(string);
-                for (int k = 0; k < (maxCellWidth - (padding / 2) - string.length());
-                     k++) {
+                for (int k = 0; k < (padding - (padding / 2)); k++) {
                     System.out.print(" ");
                 }
                 System.out.print("|");
