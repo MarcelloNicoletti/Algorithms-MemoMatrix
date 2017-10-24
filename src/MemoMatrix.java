@@ -7,81 +7,83 @@ import java.util.function.Function;
  * This is a helper class for a broad class of dynamic programming problems.
  * It generalizes a 2d collection of sub-problem solutions of type {@code T} and
  * provides a method for pretty printing. Dynamically resizes as needed.
- * Note: This is not a sparse matrix, will use {@code maxX * maxY} space.
+ * Note: This is not a sparse matrix, will use {@code maxCols * maxRows} space.
  *
+ * @param <T> The type of the solutions to "memoize".
  * @author Marcello Nicoletti
  * @version v0.1.0, 10/22/2017
- * @param <T> The type of the solutions to "memoize".
  */
-public class MemoMatrix<T> {
+public class MemoMatrix <T> {
+    // memo is a column major list. It is a list of columns where each column
+    // is a list of values. A column's ith value is in the ith row.
     private List<List<T>> memo;
-    private int maxX, maxY;
+    private int maxCols, maxRows;
 
     /**
-     * Creates a matrix with initial X and Y dimensions.
+     * Creates a matrix with initial columns and rows.
      *
-     * @param initialX The initial number of columns.
-     * @param initialY The initial number of rows.
+     * @param initialCols The initial number of columns.
+     * @param initialRows The initial number of rows.
      */
-    public MemoMatrix (int initialX, int initialY) {
+    public MemoMatrix (int initialCols, int initialRows) {
+        maxCols = initialCols;
+        maxRows = initialRows;
+
         memo = new ArrayList<>();
-        for (int i = 0; i < initialX; i++) {
-            ArrayList<T> temp = new ArrayList<>();
-            for (int j = 0; j < initialY; j++) {
-                temp.add(null);
+        for (int i = 0; i < maxCols; i++) {
+            List<T> column = new ArrayList<>();
+            for (int j = 0; j < maxRows; j++) {
+                column.add(null);
             }
-            memo.add(temp);
+            memo.add(column);
         }
-        maxX = initialX;
-        maxY = initialY;
     }
 
     /**
-     * Records a particular solution at the spot (x, y) in the matrix.
-     * Dynamically resizes matrix if either x or y are bigger than current
+     * Records a particular solution at the spot (col, row) in the matrix.
+     * Dynamically resizes matrix if either col or row are bigger than current
      * matrix dimensions.
      *
-     * @param x The column coordinate of the solution.
-     * @param y The row coordinate of the solution.
+     * @param col     The column coordinate of the solution.
+     * @param row     The row coordinate of the solution.
      * @param element The solution to record.
      */
-    public void memoize (int x, int y, T element) {
-        if (x >= maxX || y >= maxY) {
-            // resize matrix to new dimensions needed.
-        }
+    public void memoize (int col, int row, T element) {
+        ensureMatrixSize(col, row);
 
-        memo.get(x).set(y, element);
+        memo.get(col).set(row, element);
     }
 
     /**
-     * Checks whether a solution is recorded in the spot (x, y) in the matrix.
+     * Checks whether a solution is recorded in the spot (col, row) in the
+     * matrix.
      *
-     * @param x The column coordinate of the solution.
-     * @param y The row coordinate of the solution.
+     * @param col The column coordinate of the solution.
+     * @param row The row coordinate of the solution.
      * @return True if the solution at this location has been recorded.
      */
-    public boolean isMemoized (int x, int y) {
-        if (x >= maxX || y >= maxY) {
+    public boolean isMemoized (int col, int row) {
+        if (col >= maxCols || row >= maxRows) {
             return false;
         }
 
-        return memo.get(x).get(y) != null;
+        return memo.get(col).get(row) != null;
     }
 
     /**
-     * Returns the solution recorded in the spot (x, y) in the matrix.
+     * Returns the solution recorded in the spot (col, row) in the matrix.
      *
-     * @param x The column coordinate of the solution.
-     * @param y The row coordinate of the solution.
+     * @param col The column coordinate of the solution.
+     * @param row The row coordinate of the solution.
      * @return The solution recorded in this spot, or {@code null} if no
      * solution yet recorded.
      */
-    public T recall (int x, int y) {
-        if (x >= maxX || y >= maxY) {
+    public T recall (int col, int row) {
+        if (col >= maxCols || row >= maxRows) {
             return null;
         }
 
-        return memo.get(x).get(y);
+        return memo.get(col).get(row);
     }
 
     /**
@@ -104,9 +106,9 @@ public class MemoMatrix<T> {
 
         int maxCellWidth = 1;
         List<List<String>> lists = new ArrayList<>();
-        for (int i = 0; i < memo.size(); i++) {
+        for (int i = 0; i < maxCols; i++) {
             List<String> strings = new ArrayList<>();
-            for (int j = 0; j < memo.get(i).size(); j++) {
+            for (int j = 0; j < maxRows; j++) {
                 if (isMemoized(i, j)) {
                     String stringForm = stringFunction.apply(recall(i, j));
                     strings.add(stringForm);
@@ -119,9 +121,9 @@ public class MemoMatrix<T> {
         }
 
         horizontalRule(maxCellWidth);
-        for (int j = 0; j < lists.get(0).size(); j++) {
+        for (int j = 0; j < maxRows; j++) {
             System.out.print("|");
-            for (int i = 0; i < lists.size(); i++) {
+            for (int i = 0; i < maxCols; i++) {
                 String string = lists.get(i).get(j);
                 int padding = maxCellWidth - string.length();
                 for (int k = 0; k < padding / 2; k++) {
@@ -138,6 +140,40 @@ public class MemoMatrix<T> {
     }
 
     /**
+     * Ensures matrix is large enough to contain the spot (col, row),
+     * resizing if needed.
+     *
+     * @param col The column needed.
+     * @param row The row needed.
+     */
+    private void ensureMatrixSize (int col, int row) {
+        if (col >= maxCols || row >= maxRows) {
+            // Add any extra columns if needed
+            int newMaxCols = Math.max(col + 1, maxCols);
+            for (int i = 0; i < newMaxCols - maxCols; i++) {
+                List<T> column = new ArrayList<>();
+                for (int j = 0; j < maxRows; j++) {
+                    column.add(null);
+                }
+                memo.add(column);
+            }
+            maxCols = newMaxCols;
+
+            // Add any extra rows if needed
+            int newMaxRows = Math.max(row + 1, maxRows);
+            if (newMaxRows > maxRows) {
+                for (int i = 0; i < maxCols; i++) {
+                    List<T> column = memo.get(i);
+                    for (int j = 0; j < newMaxRows - maxRows; j++) {
+                        column.add(null);
+                    }
+                }
+            }
+            maxRows = newMaxRows;
+        }
+    }
+
+    /**
      * Helper method to print a horizontal line between rows in the pretty
      * print.
      *
@@ -147,7 +183,7 @@ public class MemoMatrix<T> {
         cellWidth += 1; // adjust for separator
         System.out.println();
         System.out.print("+");
-        int lineWidth = memo.size() * cellWidth;
+        int lineWidth = maxCols * cellWidth;
         for (int i = 0; i < lineWidth; i++) {
             if ((i + 1) % cellWidth == 0) {
                 System.out.print("+");
