@@ -20,6 +20,13 @@ public class MemoMatrix <T> {
     private int maxCols, maxRows;
 
     /**
+     * Creates a matrix with no initial columns or rows.
+     */
+    public MemoMatrix () {
+        this(0, 0);
+    }
+
+    /**
      * Creates a matrix with initial columns and rows.
      *
      * @param initialCols The initial number of columns.
