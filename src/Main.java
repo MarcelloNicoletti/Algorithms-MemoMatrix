@@ -30,8 +30,8 @@ public class Main {
 
         List<Good> packedGoods = knapsack(goods, maxWeight);
 
-        System.out.println("\nThese goods fit with the best profit, " +
-                profit(packedGoods) + ".");
+        System.out.println("\nThese goods fit with the best Total Profit, " +
+                totalProfit(packedGoods) + ".");
         for (Good packedGood : packedGoods) {
             System.out.println(packedGood.toString());
         }
@@ -44,7 +44,7 @@ public class Main {
 
         // Call recursive helper
         List<Good> solution = knapsackHelper(goods, maxWeight, memo);
-        memo.printMatrix(e -> Integer.toString(profit(e)));
+        memo.printMatrix(e -> Integer.toString(totalProfit(e)));
         return solution;
     }
 
@@ -92,7 +92,8 @@ public class Main {
         }
 
         // Compare profits and return best
-        if (profit(solutionUsingLast) > profit(solutionNotUsingLast)) {
+        if (totalProfit(solutionUsingLast) >
+                totalProfit(solutionNotUsingLast)) {
             memo.memoize(maxWeight, lastGoodIdx, solutionUsingLast);
             return solutionUsingLast;
         } else {
@@ -101,7 +102,7 @@ public class Main {
         }
     }
 
-    private static int profit (List<Good> goods) {
+    private static int totalProfit (List<Good> goods) {
         return goods.stream().mapToInt(Good::getProfit).sum();
     }
 }
