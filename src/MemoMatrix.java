@@ -6,7 +6,8 @@ import java.util.function.Function;
  * A matrix of solutions of type {@code T}.
  * This is a helper class for a broad class of dynamic programming problems.
  * It generalizes a 2d collection of sub-problem solutions of type {@code T} and
- * provides a method for pretty printing.
+ * provides a method for pretty printing. Dynamically resizes as needed.
+ * Note: This is not a sparse matrix, will use {@code maxX * maxY} space.
  *
  * @author Marcello Nicoletti
  * @version v0.1.0, 10/22/2017
@@ -14,6 +15,7 @@ import java.util.function.Function;
  */
 public class MemoMatrix<T> {
     private List<List<T>> memo;
+    private int maxX, maxY;
 
     /**
      * Creates a matrix with initial X and Y dimensions.
@@ -30,17 +32,24 @@ public class MemoMatrix<T> {
             }
             memo.add(temp);
         }
+        maxX = initialX;
+        maxY = initialY;
     }
 
     /**
      * Records a particular solution at the spot (x, y) in the matrix.
+     * Dynamically resizes matrix if either x or y are bigger than current
+     * matrix dimensions.
      *
      * @param x The column coordinate of the solution.
      * @param y The row coordinate of the solution.
      * @param element The solution to record.
      */
     public void memoize (int x, int y, T element) {
-        // todo: index checks
+        if (x >= maxX || y >= maxY) {
+            // resize matrix to new dimensions needed.
+        }
+
         memo.get(x).set(y, element);
     }
 
@@ -52,7 +61,10 @@ public class MemoMatrix<T> {
      * @return True if the solution at this location has been recorded.
      */
     public boolean isMemoized (int x, int y) {
-        // todo: index checks
+        if (x >= maxX || y >= maxY) {
+            return false;
+        }
+
         return memo.get(x).get(y) != null;
     }
 
@@ -65,7 +77,10 @@ public class MemoMatrix<T> {
      * solution yet recorded.
      */
     public T recall (int x, int y) {
-        // todo: index checks
+        if (x >= maxX || y >= maxY) {
+            return null;
+        }
+
         return memo.get(x).get(y);
     }
 
