@@ -2,9 +2,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * A matrix of solutions of type {@code T}.
+ * This is a helper class for a broad class of dynamic programming problems.
+ * It generalizes a 2d collection of sub-problem solutions of type {@code T} and
+ * provides a method for pretty printing.
+ *
+ * @author Marcello Nicoletti
+ * @version v0.1.0, 10/22/2017
+ * @param <T> The type of the solutions to "memoize".
+ */
 public class MemoMatrix<T> {
     private List<List<T>> memo;
 
+    /**
+     * Creates a matrix with initial X and Y dimensions.
+     *
+     * @param initialX The initial number of columns.
+     * @param initialY The initial number of rows.
+     */
     public MemoMatrix (int initialX, int initialY) {
         memo = new ArrayList<>();
         for (int i = 0; i < initialX; i++) {
@@ -16,25 +32,58 @@ public class MemoMatrix<T> {
         }
     }
 
+    /**
+     * Records a particular solution at the spot (x, y) in the matrix.
+     *
+     * @param x The column coordinate of the solution.
+     * @param y The row coordinate of the solution.
+     * @param element The solution to record.
+     */
     public void memoize (int x, int y, T element) {
         // todo: index checks
         memo.get(x).set(y, element);
     }
 
+    /**
+     * Checks whether a solution is recorded in the spot (x, y) in the matrix.
+     *
+     * @param x The column coordinate of the solution.
+     * @param y The row coordinate of the solution.
+     * @return True if the solution at this location has been recorded.
+     */
     public boolean isMemoized (int x, int y) {
         // todo: index checks
         return memo.get(x).get(y) != null;
     }
 
+    /**
+     * Returns the solution recorded in the spot (x, y) in the matrix.
+     *
+     * @param x The column coordinate of the solution.
+     * @param y The row coordinate of the solution.
+     * @return The solution recorded in this spot, or {@code null} if no
+     * solution yet recorded.
+     */
     public T recall (int x, int y) {
         // todo: index checks
         return memo.get(x).get(y);
     }
 
+    /**
+     * Pretty prints the matrix to standard out using {@code T.toString()} to
+     * fill in the cells.
+     */
     public void printMatrix () {
         printMatrix(T::toString);
     }
 
+    /**
+     * Pretty prints the matrix to standard out using {@code stringFunction}
+     * to transform solutions into the string for cell contents.
+     *
+     * @param stringFunction A function, or lambda, defining a
+     *                       transformation from {@code T} to {@code String}
+     */
     public void printMatrix (Function<T, String> stringFunction) {
         // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
@@ -45,8 +94,8 @@ public class MemoMatrix<T> {
             for (int j = 0; j < memo.get(i).size(); j++) {
                 if (isMemoized(i, j)) {
                     String stringForm = stringFunction.apply(recall(i, j));
-                    maxCellWidth = Math.max(maxCellWidth, stringForm.length());
                     strings.add(stringForm);
+                    maxCellWidth = Math.max(maxCellWidth, stringForm.length());
                 } else {
                     strings.add("—");
                 }
@@ -74,6 +123,12 @@ public class MemoMatrix<T> {
         }
     }
 
+    /**
+     * Helper method to print a horizontal line between rows in the pretty
+     * print.
+     *
+     * @param cellWidth The width of each cell.
+     */
     private void horizontalRule (int cellWidth) {
         cellWidth += 1; // adjust for separator
         System.out.println();
