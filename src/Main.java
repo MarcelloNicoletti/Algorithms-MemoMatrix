@@ -28,6 +28,7 @@ public class Main {
         }
 
         List<Good> packedGoods = knapsack(goods, maxWeight);
+
         System.out.println("\nThese goods fit with the best profit, " +
                 profit(packedGoods) + ".");
         for (Good packedGood : packedGoods) {
