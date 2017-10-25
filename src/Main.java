@@ -39,8 +39,8 @@ public class Main {
     }
 
     private static List<Good> knapsack (List<Good> goods, int maxWeight) {
-        MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1, goods.size
-                ());
+        MemoMatrix<List<Good>> memo = new MemoMatrix<>(maxWeight + 1,
+                                                       goods.size());
 
         List<Good> solution = knapsackHelper(goods, maxWeight, memo);
         memo.printMatrix(e -> Integer.toString(totalProfit(e)));

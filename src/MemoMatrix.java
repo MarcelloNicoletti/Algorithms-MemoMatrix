@@ -11,7 +11,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the solutions to "memoize".
  * @author Marcello Nicoletti
- * @version v0.2.0, 10/23/2017
+ * @version v0.3.0, 10/25/2017
  */
 public class MemoMatrix <T> {
     // memo is a column major list. It is a list of columns where each column
@@ -144,6 +144,14 @@ public class MemoMatrix <T> {
             }
             horizontalRule(maxCellWidth);
         }
+    }
+
+    public int getNumCols () {
+        return maxCols;
+    }
+
+    public int getNumRows () {
+        return maxRows;
     }
 
     /**
