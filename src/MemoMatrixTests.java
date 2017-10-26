@@ -1,5 +1,6 @@
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -8,27 +9,36 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MemoMatrixTests {
-    private ByteArrayOutputStream outTest;
-    private ByteArrayOutputStream errTest;
-    private PrintStream outOriginal;
-    private PrintStream errOriginal;
+    private static final ByteArrayOutputStream outTest = new
+    ByteArrayOutputStream();
+    private static final ByteArrayOutputStream errTest = new
+    ByteArrayOutputStream();
+    private static PrintStream outOriginal;
+    private static PrintStream errOriginal;
 
-    @BeforeEach
-    void setUpStreams() {
+    @BeforeAll
+    static void setUpStreams () {
         outOriginal = System.out;
         errOriginal = System.err;
 
-        outTest = new ByteArrayOutputStream();
-        errTest = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outTest));
         System.setErr(new PrintStream(errTest));
     }
 
-    @AfterEach
-    void cleanUpStreams() {
+    @AfterAll
+    static void cleanUpStreams () {
         System.setOut(outOriginal);
         System.setErr(errOriginal);
     }
+
+    @AfterEach
+    void resetTestStreams () {
+        outTest.reset();
+        errTest.reset();
+    }
+
+    // TODO: Break into many smaller tests.
+    // TODO: Non-happy path tests.
 
     @Test
     void canCreateUsingEmptyConstructor () {
