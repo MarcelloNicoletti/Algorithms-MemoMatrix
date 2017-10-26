@@ -1,8 +1,35 @@
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MemoMatrixTests {
+    private ByteArrayOutputStream outTest;
+    private ByteArrayOutputStream errTest;
+    private PrintStream outOriginal;
+    private PrintStream errOriginal;
+
+    @BeforeEach
+    void setUpStreams() {
+        outOriginal = System.out;
+        errOriginal = System.err;
+
+        outTest = new ByteArrayOutputStream();
+        errTest = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outTest));
+        System.setErr(new PrintStream(errTest));
+    }
+
+    @AfterEach
+    void cleanUpStreams() {
+        System.setOut(outOriginal);
+        System.setErr(errOriginal);
+    }
+
     @Test
     void canCreateUsingEmptyConstructor () {
         MemoMatrix<Object> memo = new MemoMatrix<>();
@@ -49,4 +76,6 @@ class MemoMatrixTests {
         assertTrue(memo.isMemoized(1, 1));
         assertEquals(test2, memo.recall(1, 1));
     }
+
+    // TODO: more printMatrix tests.
 }
