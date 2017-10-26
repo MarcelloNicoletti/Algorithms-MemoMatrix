@@ -78,4 +78,36 @@ class MemoMatrixTests {
     }
 
     // TODO: more printMatrix tests.
+    @Test
+    void canPrintUsingDefaultStringFunction () {
+        MemoMatrix<Object> memo = new MemoMatrix<>();
+        memo.printMatrix();
+
+        assertEquals("\n", outTest.toString());
+        outTest.reset();
+
+        MemoMatrix<Object> memo2 = new MemoMatrix<>(1, 1);
+        memo2.printMatrix();
+
+        assertEquals("\n+-+" +
+                     "\n| |" +
+                     "\n+-+" +
+                     "\n",
+                outTest.toString());
+        outTest.reset();
+
+        MemoMatrix<String> memo3 = new MemoMatrix<>(2,2);
+        memo3.memoize(1, 0, "test");
+        memo3.memoize(0, 1, "-");
+        memo3.printMatrix();
+
+        assertEquals("\n+----+----+" +
+                     "\n|    |test|" +
+                     "\n+----+----+" +
+                     "\n| -  |    |" +
+                     "\n+----+----+" +
+                     "\n",
+                outTest.toString());
+
+    }
 }
