@@ -111,38 +111,43 @@ public class MemoMatrix <T> {
     public void printMatrix (Function<T, String> stringFunction) {
         // example call printMatrix((e) -> (Integer.toString(profit(e))));
 
-        int maxCellWidth = 1;
-        List<List<String>> lists = new ArrayList<>();
-        for (int i = 0; i < maxCols; i++) {
-            List<String> strings = new ArrayList<>();
-            for (int j = 0; j < maxRows; j++) {
-                if (isMemoized(i, j)) {
-                    String stringForm = stringFunction.apply(recall(i, j));
-                    strings.add(stringForm);
-                    maxCellWidth = Math.max(maxCellWidth, stringForm.length());
-                } else {
-                    strings.add(" ");
-                }
-            }
-            lists.add(strings);
-        }
-
-        horizontalRule(maxCellWidth);
-        for (int j = 0; j < maxRows; j++) {
-            System.out.print("|");
+        if (maxCols > 0 && maxRows > 0) {
+            int maxCellWidth = 1;
+            List<List<String>> lists = new ArrayList<>();
             for (int i = 0; i < maxCols; i++) {
-                String string = lists.get(i).get(j);
-                int padding = maxCellWidth - string.length();
-                for (int k = 0; k < padding / 2; k++) {
-                    System.out.print(" ");
+                List<String> strings = new ArrayList<>();
+                for (int j = 0; j < maxRows; j++) {
+                    if (isMemoized(i, j)) {
+                        String stringForm = stringFunction.apply(recall(i, j));
+                        strings.add(stringForm);
+                        maxCellWidth =
+                                Math.max(maxCellWidth, stringForm.length());
+                    } else {
+                        strings.add(" ");
+                    }
                 }
-                System.out.print(string);
-                for (int k = 0; k < (padding - (padding / 2)); k++) {
-                    System.out.print(" ");
-                }
-                System.out.print("|");
+                lists.add(strings);
             }
+
             horizontalRule(maxCellWidth);
+            for (int j = 0; j < maxRows; j++) {
+                System.out.print("|");
+                for (int i = 0; i < maxCols; i++) {
+                    String string = lists.get(i).get(j);
+                    int padding = maxCellWidth - string.length();
+                    for (int k = 0; k < padding / 2; k++) {
+                        System.out.print(" ");
+                    }
+                    System.out.print(string);
+                    for (int k = 0; k < (padding - (padding / 2)); k++) {
+                        System.out.print(" ");
+                    }
+                    System.out.print("|");
+                }
+                horizontalRule(maxCellWidth);
+            }
+        } else {
+            System.out.println();
         }
     }
 
