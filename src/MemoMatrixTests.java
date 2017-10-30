@@ -38,6 +38,7 @@ class MemoMatrixTests {
     }
 
     // TODO: Break into many smaller tests.
+    // TODO: Square matrix stuff
     // TODO: Non-happy path tests.
 
     @Test

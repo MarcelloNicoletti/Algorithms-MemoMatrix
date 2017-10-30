@@ -11,7 +11,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of the solutions to "memoize".
  * @author Marcello Nicoletti
- * @version v0.3.0, 10/25/2017
+ * @version v0.3.5, 10/29/2017
  */
 public class MemoMatrix <T> {
     // memo is a column major list. It is a list of columns where each column
@@ -24,6 +24,15 @@ public class MemoMatrix <T> {
      */
     public MemoMatrix () {
         this(0, 0);
+    }
+
+    /**
+     * Creates a square matrix with initial dimension size.
+     *
+     * @param initialDimension The initial number of columns and rows.
+     */
+    public MemoMatrix (int initialDimension) {
+        this(initialDimension, initialDimension);
     }
 
     /**
@@ -151,12 +160,31 @@ public class MemoMatrix <T> {
         }
     }
 
+    /**
+     * Gives the number of columns in this matrix.
+     *
+     * @return The number of columns in the matrix.
+     */
     public int getNumCols () {
         return maxCols;
     }
 
+    /**
+     * Gives the number of rows in this matrix.
+     *
+     * @return The number of rows in the matrix.
+     */
     public int getNumRows () {
         return maxRows;
+    }
+
+    /**
+     * Gives whether the matrix is a square matrix.
+     *
+     * @return {@code true} if matrix dimensions are the same
+     */
+    public boolean isSquare () {
+        return maxCols == maxRows;
     }
 
     /**
